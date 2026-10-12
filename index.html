@@ -59,6 +59,27 @@ section h2{font-size:clamp(26px,3.6vw,36px);margin-bottom:22px}
 .sub{font-size:22px;margin:26px 0 14px}
 .sub:first-of-type{margin-top:0}
 .price{font:800 30px var(--hd);display:block;margin-bottom:4px}
+.stage{height:310px;perspective:1100px;overflow:hidden;cursor:grab;touch-action:pan-y;-webkit-user-select:none;user-select:none;margin-top:4px}
+.stage.drag{cursor:grabbing}
+.ring{--cw:150px;position:relative;width:var(--cw);height:calc(var(--cw)*1.5);margin:34px auto 0;transform-style:preserve-3d;transition:transform .55s cubic-bezier(.2,.8,.2,1)}
+.gcard{position:absolute;inset:0;border-radius:14px;padding:14px;display:flex;flex-direction:column;justify-content:space-between;color:#fff;-webkit-backface-visibility:hidden;backface-visibility:hidden;box-shadow:0 12px 26px rgba(10,20,50,.35);border:1px solid rgba(255,255,255,.28);transition:opacity .4s}
+.gcard b{font:800 21px/1.08 var(--hd);text-shadow:0 2px 6px rgba(0,0,0,.35);overflow-wrap:break-word}
+.gcard small{font:700 11px var(--bd);letter-spacing:.09em;text-transform:uppercase;opacity:.92}
+.gcard .tag{align-self:flex-start;background:rgba(255,255,255,.22);padding:3px 8px;border-radius:6px}
+.gcard b.sm{font-size:17px}
+.gcard.gold{color:#3a2600;background:linear-gradient(160deg,#ffe38a,#e0a82e 55%,#a8731a);border-color:rgba(255,255,255,.5)}
+.gcard.gold b{text-shadow:none}
+.gcard.gold .tag{background:rgba(58,38,0,.16)}
+.stage.drag .ring,.stage.drag .gcard{transition:none}
+.gcap{display:flex;align-items:center;justify-content:center;gap:16px;margin-top:10px;text-align:center}
+.gcap div{min-width:210px;min-height:72px;display:flex;flex-direction:column;justify-content:center}
+.gcap strong{display:block;font:800 20px var(--hd)}
+.gcap span{color:var(--mute);font-size:15px}
+.gbtn{width:46px;height:46px;border-radius:50%;border:2px solid var(--line);background:var(--card);color:var(--ink);font:700 24px/1 var(--bd);cursor:pointer}
+.gbtn:hover{border-color:var(--blue)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+@media (min-width:821px){.ring{--cw:180px}.stage{height:370px}}
+@media (prefers-reduced-motion:reduce){.ring,.gcard{transition:none}}
 .games{display:flex;flex-wrap:wrap;gap:10px;padding:0;margin:0;list-style:none}
 .games li{background:var(--card);border:1px solid var(--line);border-radius:999px;padding:9px 16px;font-weight:500}
 .steps{counter-reset:s;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;padding:0;margin:0;list-style:none}
@@ -137,11 +158,15 @@ footer{border-top:1px solid var(--line);padding:30px 0 40px;color:var(--mute);fo
 
 <section id="igre">
   <h2>Igre na raspolaganju</h2>
-  <ul class="games">
-    <li>EA Sports FC 26</li><li>Tekken 8</li><li>GTA V</li><li>Red Dead Redemption 2</li><li>Hogwarts Legacy</li><li>It Takes Two</li>
-    <li>Crash Team Racing Nitro-Fueled</li><li>Call of Duty: Black Ops Cold War</li>
-  </ul>
-  <div class="box" style="margin-top:18px;border-color:var(--blue)"><h3>Plus stotine igara iz PS Plus Premium kataloga</h3><p>Pretplata je aktivna na konzoli, pa uz igre na disku možeš birati iz velikog kataloga bez dodatne doplate. Tražiš određenu igru? Javi nam prije preuzimanja.</p></div>
+  <div class="stage" id="stage" tabindex="0" role="group" aria-roledescription="carousel" aria-label="Igre na raspolaganju. Prevuci ili koristi strelice.">
+    <div class="ring" id="ring"></div>
+  </div>
+  <div class="gcap">
+    <button class="gbtn" id="gprev" aria-label="Prethodna igra">&#8249;</button>
+    <div aria-live="polite"><strong id="gname"></strong><span id="ggenre"></span></div>
+    <button class="gbtn" id="gnext" aria-label="Sljedeća igra">&#8250;</button>
+  </div>
+  <ul class="sr"><li>EA Sports FC 26</li><li>EA Sports FC 27</li><li>Tekken 8</li><li>UFC</li><li>GTA V</li><li>Red Dead Redemption 2</li><li>Hogwarts Legacy</li><li>It Takes Two</li><li>Crash Team Racing Nitro-Fueled</li><li>Call of Duty: Black Ops Cold War</li><li>Grand Theft Auto VI (uskoro)</li><li>PlayStation Plus Premium, katalog igara</li></ul>
 </section>
 
 <section>
@@ -200,16 +225,36 @@ footer{border-top:1px solid var(--line);padding:30px 0 40px;color:var(--mute);fo
   ZONES.forEach(function(zn,k){var o=document.createElement('option');o.value=k;o.textContent=fee(zn)+' KM – '+zn.n+' (do '+zn.km+' km)';z.appendChild(o)});
   var oo=document.createElement('option');oo.value='-1';oo.textContent='Drugo područje (po dogovoru)';z.appendChild(oo);
   var MJ=['Januar','Februar','Mart','April','Maj','Juni','Juli','August','Septembar','Oktobar','Novembar','Decembar'];
-  function fill(sel,ph,items){var o=document.createElement('option');o.value='';o.textContent=ph;sel.appendChild(o);items.forEach(function(it){var p=document.createElement('option');p.value=it[0];p.textContent=it[1];sel.appendChild(p)})}
-  var yr=new Date().getFullYear(), A=[];
-  for(var q=1;q<=31;q++)A.push([q,q]);
-  fill($('dd'),'Dan',A);
-  fill($('dm'),'Mjesec',MJ.map(function(m,k){return [k+1,m]}));
-  fill($('dy'),'Godina',[[yr,yr],[yr+1,yr+1]]);
+  var today=new Date();today.setHours(0,0,0,0);
+  var maxD=new Date(today.getFullYear(),today.getMonth()+3,today.getDate());
+  if(maxD.getMonth()!==(today.getMonth()+3)%12)maxD=new Date(today.getFullYear(),today.getMonth()+4,0);
+  var sd=$('dd'),sm=$('dm'),sy=$('dy');
+  function fill(sel,ph,items){
+    var keep=sel.value;sel.innerHTML='';
+    var o=document.createElement('option');o.value='';o.textContent=ph;sel.appendChild(o);
+    items.forEach(function(it){var p=document.createElement('option');p.value=it[0];p.textContent=it[1];sel.appendChild(p)});
+    if(keep&&items.some(function(it){return String(it[0])===keep}))sel.value=keep;
+  }
+  function monthItems(Y){var r=[];for(var m=1;m<=12;m++){var a=new Date(Y,m-1,1),b=new Date(Y,m,0);if(b>=today&&a<=maxD)r.push([m,MJ[m-1]])}return r}
+  function dayItems(Y,M){
+    var lo=1,hi=31;
+    if(M){hi=new Date(Y,M,0).getDate();
+      if(Y===today.getFullYear()&&M===today.getMonth()+1)lo=today.getDate();
+      if(Y===maxD.getFullYear()&&M===maxD.getMonth()+1)hi=Math.min(hi,maxD.getDate())}
+    var r=[];for(var q=lo;q<=hi;q++)r.push([q,q]);return r;
+  }
+  var ys=[today.getFullYear()];if(maxD.getFullYear()!==ys[0])ys.push(maxD.getFullYear());
+  fill(sy,'Godina',ys.map(function(y){return [y,y]}));sy.value=ys[0];
+  function refill(lv){var Y=+sy.value;if(lv==='y')fill(sm,'Mjesec',monthItems(Y));fill(sd,'Dan',dayItems(Y,+sm.value))}
+  refill('y');
+  sm.value=String(today.getMonth()+1);refill('m');
+  sy.addEventListener('change',function(){refill('y')});
+  sm.addEventListener('change',function(){refill('m')});
   function getDate(){
-    var D=+$('dd').value,M=+$('dm').value,Y=+$('dy').value;
+    var D=+sd.value,M=+sm.value,Y=+sy.value;
     if(!D||!M||!Y)return '';
-    if(D>new Date(Y,M,0).getDate())return 'bad';
+    var dt=new Date(Y,M-1,D);
+    if(dt.getMonth()!==M-1||dt<today||dt>maxD)return 'bad';
     return Y+'-'+('0'+M).slice(-2)+'-'+('0'+D).slice(-2);
   }
   function calc(){
@@ -230,7 +275,7 @@ footer{border-top:1px solid var(--line);padding:30px 0 40px;color:var(--mute);fo
     if(deliver) parts.push(zi>=0?'dostava '+dfee+' KM':'dostava po dogovoru');
     $('per').textContent=parts.join(' • ');
     var dt=getDate(), bad=dt==='bad'; if(bad)dt='';
-    $('dshow').textContent=bad?'Taj datum ne postoji, provjeri dan i mjesec.':(dt?'Odabrano: '+fmt(dt):'');
+    $('dshow').textContent=bad?'Izaberi važeći datum u narednih 3 mjeseca.':(dt?'Odabrano: '+fmt(dt):'');
     var msg='Zdravo! Zanima me iznajmljivanje: '+(pro?'PS5 Pro':'PS5')+', '+n+(n===1?' dan':' dana')+
       ', dodatni kontroleri: '+(c||'ne')+', '+dtxt+
       (dt?', datum: '+fmt(dt):'')+'. Okvirna cijena: '+sum+' KM'+(deliver&&zi<0?' + dostava':'')+'. Je li slobodno?';
@@ -238,6 +283,64 @@ footer{border-top:1px solid var(--line);padding:30px 0 40px;color:var(--mute);fo
   }
   ['change','input'].forEach(function(e){document.addEventListener(e,function(ev){if(ev.target.closest&&ev.target.closest('.calc'))calc()})});
   calc();
+})();
+
+(function(){
+  // [kratak naziv na kartici, pun naziv, žanr, nijansa boje, opcije]
+  var G=[
+    ['PS Plus Premium','PS Plus Premium','Stotine igara bez doplate',0,{gold:1}],
+    ['EA FC 26 / 27','EA Sports FC 26 i FC 27','Fudbal',150],
+    ['Tekken 8 + UFC','Tekken 8 i UFC','Borilački',355],
+    ['GTA V','Grand Theft Auto V','Akcija',45],
+    ['GTA VI','Grand Theft Auto VI','Akcija',330,{release:'2026-11-19'}],
+    ['Red Dead 2','Red Dead Redemption 2','Avantura',12],
+    ['Hogwarts Legacy','Hogwarts Legacy','Avantura / RPG',265],
+    ['It Takes Two','It Takes Two','Co-op za dvoje',190],
+    ['CTR Nitro-Fueled','Crash Team Racing Nitro-Fueled','Trke',100],
+    ['COD: Cold War','Call of Duty: Black Ops Cold War','Akcija / pucačina',225]
+  ];
+  var n=G.length, A=360/n, rot=0, R=0, last=-1;
+  var today=new Date();today.setHours(0,0,0,0);
+  function soon(g){return !!(g[4]&&g[4].release&&today<new Date(g[4].release+'T00:00:00'))}
+  function fmtD(s){return s.split('-').reverse().join('/')}
+  function genreText(g){return soon(g)?'Dostupno od '+fmtD(g[4].release):g[2]}
+  var stage=document.getElementById('stage'), ring=document.getElementById('ring'), cards=[];
+  G.forEach(function(g){
+    var gold=!!(g[4]&&g[4].gold);
+    var c=document.createElement('div');c.className='gcard'+(gold?' gold':'');
+    if(!gold)c.style.background='linear-gradient(160deg,hsl('+g[3]+' 65% 48%),hsl('+(g[3]+35)+' 70% 26%))';
+    var tag=document.createElement('span');tag.className='tag';
+    var ts=document.createElement('small');ts.textContent=gold?'UKLJUČENO':'PS5';tag.appendChild(ts);
+    var b=document.createElement('b');b.textContent=g[0];
+    var words=g[0].split(/\s+/),longest=Math.max.apply(null,words.map(function(w){return w.length}));
+    if(words.length>=3||longest>10)b.className='sm';
+    var gs=document.createElement('small');gs.textContent=gold?'Katalog igara':g[2];
+    c.appendChild(tag);c.appendChild(b);c.appendChild(gs);
+    ring.appendChild(c);cards.push(c);
+  });
+  function idx(){return ((Math.round(-rot/A)%n)+n)%n}
+  function render(){
+    ring.style.transform='translateZ(-'+R+'px) rotateY('+rot+'deg)';
+    cards.forEach(function(c,i){var d=(((i*A+rot)%360)+540)%360-180;c.style.opacity=Math.max(.2,1-Math.abs(d)/110).toFixed(2)});
+    var k=idx();
+    if(k!==last){last=k;document.getElementById('gname').textContent=G[k][1];document.getElementById('ggenre').textContent=genreText(G[k])}
+  }
+  function layout(){
+    R=Math.round((ring.offsetWidth/2)/Math.tan(Math.PI/n))+10;
+    cards.forEach(function(c,i){c.style.transform='rotateY('+(i*A)+'deg) translateZ('+R+'px)'});
+    render();
+  }
+  function go(dlt){rot=-(Math.round(-rot/A)+dlt)*A;render()}
+  var drag=false,sx=0,sr=0;
+  stage.addEventListener('pointerdown',function(e){drag=true;sx=e.clientX;sr=rot;stage.classList.add('drag');try{stage.setPointerCapture(e.pointerId)}catch(x){}});
+  stage.addEventListener('pointermove',function(e){if(!drag)return;rot=sr+(e.clientX-sx)*0.35;render()});
+  function end(){if(!drag)return;drag=false;stage.classList.remove('drag');rot=-Math.round(-rot/A)*A;render()}
+  stage.addEventListener('pointerup',end);stage.addEventListener('pointercancel',end);
+  stage.addEventListener('keydown',function(e){if(e.key==='ArrowRight'){go(1);e.preventDefault()}else if(e.key==='ArrowLeft'){go(-1);e.preventDefault()}});
+  document.getElementById('gnext').addEventListener('click',function(){go(1)});
+  document.getElementById('gprev').addEventListener('click',function(){go(-1)});
+  window.addEventListener('resize',layout);
+  layout();
 })();
 </script>
 </body>
