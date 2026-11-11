@@ -31,7 +31,7 @@
   "image": "https://psrent.net/og-image.jpg",
   "logo": "https://psrent.net/apple-touch-icon.png",
   "telephone": "+38761963747",
-  "priceRange": "35–350 KM",
+  "priceRange": "25–320 KM",
   "currenciesAccepted": "BAM",
   "address": {
     "@type": "PostalAddress",
@@ -90,7 +90,7 @@ select:hover,select:focus,select:active{background-color:color-mix(in srgb,var(-
 option{background:var(--card);color:var(--ink)}
 .dgrid{display:grid;grid-template-columns:1fr 1.7fr 1.1fr;gap:8px}
 .dgrid select{padding:11px 22px 11px 8px;background-position:calc(100% - 14px) 52%,calc(100% - 8px) 52%}
-.seg{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.seg{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
 .seg input{position:absolute;opacity:0}
 .seg label{border:2px solid var(--line);border-radius:10px;padding:11px;text-align:center;cursor:pointer;font-weight:700}
 .seg input:checked+label{border-color:var(--blue);background:var(--blue);color:var(--blue-ink)}
@@ -128,7 +128,8 @@ section h2{font-size:clamp(26px,3.6vw,36px);margin-bottom:22px}
 .plan h3 .sh{display:none}
 .pnote{margin:14px 0 0;color:var(--mute);font-size:15px}
 @media (max-width:379px){.plan h3 .lg{display:none}.plan h3 .sh{display:inline}}
-@media (max-width:900px){.plans.n3{grid-template-columns:1fr 1fr}.plans.n3 .plan-ps4{grid-column:1/-1}.plans.n3 .plan-ps4 ul{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:900px){.plans.n3{grid-template-columns:1fr 1fr}.plans.n3 .plan-ps4{grid-column:1/-1}.plans.n3 .plan-ps4 ul{grid-template-columns:repeat(3,1fr)}}
+@media (max-width:379px){.plans.n3 .plan-ps4 ul{gap:5px}.plans.n3 .plan-ps4 li{padding:8px 7px}.plans.n3 .plan-ps4 b{font-size:16px}.plans.n3 .plan-ps4 small{display:block;margin:0}.seg label{padding:11px 4px;white-space:nowrap}}
 .plan ul{list-style:none;margin:0;padding:0;display:grid;gap:8px}
 .plan li{display:flex;justify-content:space-between;align-items:baseline;gap:8px;background:color-mix(in srgb,var(--blue) 7%,var(--card));border-radius:12px;padding:10px 14px}
 .plan li span{color:var(--mute);font-weight:500;font-size:15px}
@@ -194,6 +195,7 @@ footer{padding:30px 0 40px;color:var(--mute);font-size:15px;display:flex;justify
       <div class="seg" role="radiogroup" aria-labelledby="l1">
         <input type="radio" name="c" id="c1" value="ps5" checked><label for="c1">PS5</label>
         <input type="radio" name="c" id="c2" value="pro"><label for="c2">PS5 Pro</label>
+        <input type="radio" name="c" id="c3" value="ps4"><label for="c3">PS4</label>
       </div></div>
     <div class="row"><label for="days">Broj dana</label>
       <select id="days"></select></div>
@@ -292,10 +294,8 @@ var RELEASE={'GTA VI':'2026-11-19'};
 // day = 1 radni dan, perDay = po radnom danu za 2 do 6 dana, weekend = svaki vikend dan (pet, sub, ned), week = 7 dana
 // Bez "weekend" vikend se ne računa posebno. Konzola bez cijena u nekom periodu se ne prikazuje u cjenovniku.
 var PRICE_LIST=[
-  {from:'',           ps5:{day:35,perDay:25,week:160}, pro:{day:45,perDay:35,week:225}},
-  {from:'2026-11-19', ps4:{day:35,perDay:30,weekend:40,week:230},  // izlazak GTA VI
-                      ps5:{day:45,perDay:40,weekend:50,week:290},
-                      pro:{day:55,perDay:50,weekend:60,week:350}}
+  {from:'',           ps4:{day:25,perDay:20,week:130}, ps5:{day:35,perDay:25,week:160}, pro:{day:45,perDay:35,week:225}},
+  {from:'2026-11-19', ps4:{day:25,perDay:20,week:130}, ps5:{day:45,perDay:40,week:260}, pro:{day:55,perDay:50,week:320}}  // izlazak GTA VI
 ];
 var CONSOLES=[['ps5','PlayStation 5','PS5'],['pro','PlayStation 5 Pro','PS5 Pro'],['ps4','PlayStation 4','PS4']];
 function ymdOf(t){return t.getFullYear()+'-'+('0'+(t.getMonth()+1)).slice(-2)+'-'+('0'+t.getDate()).slice(-2)}
@@ -322,7 +322,7 @@ var TODAY=ymdOf(new Date()), PRICES=pricesOn(TODAY);
 })();
 (function(){var next=PRICE_LIST.filter(function(p){return p.from>TODAY})[0],el=document.getElementById('pnote');
   if(!next||!el)return;
-  el.textContent='Od '+next.from.split('-').reverse().join('.')+'. (izlazak GTA VI) nove cijene: radnim danima PS5 od '+next.ps5.day+' KM i PS5 Pro od '+next.pro.day+' KM, vikendom (petak–nedjelja) '+next.ps5.weekend+' i '+next.pro.weekend+' KM po danu. U ponudi će biti i PS4. Kalkulator računa cijenu automatski prema datumu preuzimanja.';
+  el.textContent='Od '+next.from.split('-').reverse().join('.')+'. (izlazak GTA VI) nove cijene: PS5 od '+next.ps5.day+' KM i PS5 Pro od '+next.pro.day+' KM. Kalkulator računa cijenu automatski prema datumu preuzimanja.';
   el.hidden=false})();
 var GAME_NAMES=['EA FC (FIFA)','Tekken','UFC','GTA V','GTA VI','Red Dead Redemption 2','It Takes Two','CTR Nitro-Fueled','COD: Cold War'];
 (function(){
@@ -388,9 +388,9 @@ var GAME_NAMES=['EA FC (FIFA)','Tekken','UFC','GTA V','GTA VI','Red Dead Redempt
     l.appendChild(inp);l.appendChild(sp);gbox.appendChild(l);
   });
   function calc(){
-    var pro=document.querySelector('input[name=c]:checked').value==='pro';
+    var ck=document.querySelector('input[name=c]:checked').value, cname={ps5:'PS5',pro:'PS5 Pro',ps4:'PS4'}[ck];
     var n=+d.value, base;
-    var pd=getDate(), start=pd&&pd!=='bad'?pd:TODAY, PL=pricesOn(start), P=pro?PL.pro:PL.ps5;
+    var pd=getDate(), start=pd&&pd!=='bad'?pd:TODAY, PL=pricesOn(start), P=PL[ck];
     base=rentPrice(P,start,n);
     var c=+$('ext').value, ext=PER_CTRL*c*n;
     var deliver=$('del').value==='dostava', zi=+z.value, dfee=0, dtxt='lično preuzimanje';
@@ -401,7 +401,7 @@ var GAME_NAMES=['EA FC (FIFA)','Tekken','UFC','GTA V','GTA VI','Red Dead Redempt
     }
     var sum=base+ext+dfee;
     $('sum').textContent=sum+' KM';
-    var parts=[n+(n===1?' dan':' dana'),pro?'PS5 Pro':'PS5'];
+    var parts=[n+(n===1?' dan':' dana'),cname];
     if(c) parts.push(c+(c===1?' dodatni kontroler':' dodatna kontrolera'));
     if(deliver) parts.push(zi>=0?'dostava '+dfee+' KM':'dostava po dogovoru');
     $('per').textContent=parts.join(' • ');
@@ -411,7 +411,7 @@ var GAME_NAMES=['EA FC (FIFA)','Tekken','UFC','GTA V','GTA VI','Red Dead Redempt
     $('gsum').textContent=picked.length?'Izabrano: '+picked.length:'';
     var gm=(picked.length?' Igre: '+picked.join(', ')+'.':'')+(other?' Posebne želje: '+other+(/[.!?]$/.test(other)?'':'.'):'');
     $('dshow').textContent=bad?'Izaberi važeći datum u narednih 3 mjeseca.':(dt?'Odabrano: '+fmt(dt):'');
-    var msg='Zdravo! Zanima me iznajmljivanje: '+(pro?'PS5 Pro':'PS5')+', '+n+(n===1?' dan':' dana')+
+    var msg='Zdravo! Zanima me iznajmljivanje: '+cname+', '+n+(n===1?' dan':' dana')+
       ', dodatni kontroleri: '+(c||'ne')+', '+dtxt+
       (dt?', datum: '+fmt(dt):'')+'.'+gm+' Okvirna cijena: '+sum+' KM'+(deliver&&zi<0?' + dostava':'')+'. Je li slobodno?';
     $('wa').href='https://wa.me/38761963747?text='+encodeURIComponent(msg);
