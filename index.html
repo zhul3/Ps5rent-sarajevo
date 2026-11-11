@@ -31,7 +31,7 @@
   "image": "https://psrent.net/og-image.jpg",
   "logo": "https://psrent.net/apple-touch-icon.png",
   "telephone": "+38761963747",
-  "priceRange": "35–320 KM",
+  "priceRange": "35–350 KM",
   "currenciesAccepted": "BAM",
   "address": {
     "@type": "PostalAddress",
@@ -122,16 +122,19 @@ section h2{font-size:clamp(26px,3.6vw,36px);margin-bottom:22px}
 .box h4{font:600 20px/1.1 var(--hd);margin:0 0 8px}
 .prices{padding-top:8px}
 .plans{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.plans.n3{grid-template-columns:repeat(3,1fr)}
 .plan{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px}
 .plan h3{font-size:20px;margin-bottom:12px}
 .plan h3 .sh{display:none}
 .pnote{margin:14px 0 0;color:var(--mute);font-size:15px}
 @media (max-width:379px){.plan h3 .lg{display:none}.plan h3 .sh{display:inline}}
+@media (max-width:900px){.plans.n3{grid-template-columns:1fr 1fr}.plans.n3 .plan-ps4{grid-column:1/-1}.plans.n3 .plan-ps4 ul{grid-template-columns:repeat(2,1fr)}}
 .plan ul{list-style:none;margin:0;padding:0;display:grid;gap:8px}
 .plan li{display:flex;justify-content:space-between;align-items:baseline;gap:8px;background:color-mix(in srgb,var(--blue) 7%,var(--card));border-radius:12px;padding:10px 14px}
 .plan li span{color:var(--mute);font-weight:500;font-size:15px}
 .plan b{font:800 22px var(--hd);white-space:nowrap}
 .plan b i{font-style:normal}
+.plan .nw{white-space:nowrap}
 .plan small{font:700 13px var(--bd);color:var(--mute);margin-left:2px}
 @media (max-width:560px){.plans{gap:10px}.plan{padding:12px;border-radius:16px}.plan h3{font-size:16px;margin-bottom:10px}.plan ul{gap:6px}.plan li{flex-direction:column;align-items:flex-start;gap:0;padding:8px 10px;border-radius:10px}.plan li span{font-size:13px}.plan b{font-size:19px}}
 .stage{height:280px;perspective:1100px;overflow:hidden;cursor:grab;touch-action:pan-y;-webkit-user-select:none;user-select:none;margin-top:4px}
@@ -214,7 +217,7 @@ footer{padding:30px 0 40px;color:var(--mute);font-size:15px;display:flex;justify
 </div>
 
 <section class="prices">
-  <div class="plans">
+  <div class="plans" id="plans">
     <div class="plan">
       <h3><span class="lg">PlayStation 5</span><span class="sh">PS5</span></h3>
       <ul>
@@ -286,18 +289,40 @@ footer{padding:30px 0 40px;color:var(--mute);font-size:15px;display:flex;justify
 // Izlazak igara (jedno mjesto za datume) i spisak igara za izbor u kalkulatoru
 var RELEASE={'GTA VI':'2026-11-19'};
 // Cijene u KM (mijenjaj samo ovdje). from = datum od kojeg cijene važe (prazno = od početka).
-// day = 24 sata, perDay = po danu za 2 do 6 dana, week = 7 dana
+// day = 1 radni dan, perDay = po radnom danu za 2 do 6 dana, weekend = svaki vikend dan (pet, sub, ned), week = 7 dana
+// Bez "weekend" vikend se ne računa posebno. Konzola bez cijena u nekom periodu se ne prikazuje u cjenovniku.
 var PRICE_LIST=[
   {from:'',           ps5:{day:35,perDay:25,week:160}, pro:{day:45,perDay:35,week:225}},
-  {from:'2026-11-19', ps5:{day:45,perDay:40,week:260}, pro:{day:55,perDay:50,week:320}}  // izlazak GTA VI
+  {from:'2026-11-19', ps4:{day:35,perDay:30,weekend:40,week:230},  // izlazak GTA VI
+                      ps5:{day:45,perDay:40,weekend:50,week:290},
+                      pro:{day:55,perDay:50,weekend:60,week:350}}
 ];
+var CONSOLES=[['ps5','PlayStation 5','PS5'],['pro','PlayStation 5 Pro','PS5 Pro'],['ps4','PlayStation 4','PS4']];
 function ymdOf(t){return t.getFullYear()+'-'+('0'+(t.getMonth()+1)).slice(-2)+'-'+('0'+t.getDate()).slice(-2)}
 function pricesOn(day){var r=PRICE_LIST[0];PRICE_LIST.forEach(function(p){if(p.from&&day>=p.from)r=p});return r}
+// Cijena najma: start = datum preuzimanja (GGGG-MM-DD), n = broj dana (1 do 7)
+function rentPrice(P,start,n){
+  if(n===7)return P.week;
+  if(!P.weekend)return n===1?P.day:P.perDay*n;
+  var d=new Date(start+'T12:00:00'),sum=0,rate=n===1?P.day:P.perDay;
+  for(var i=0;i<n;i++){var w=d.getDay();sum+=(w===5||w===6||w===0)?P.weekend:rate;d.setDate(d.getDate()+1)}
+  return sum;
+}
 var TODAY=ymdOf(new Date()), PRICES=pricesOn(TODAY);
-document.querySelectorAll('[data-p]').forEach(function(el){var k=el.getAttribute('data-p').split('.');el.textContent=PRICES[k[0]][k[1]]+' KM'});
+(function(){
+  var box=document.getElementById('plans');if(!box)return;
+  function li(label,val,unit){return '<li><span>'+label+'</span><b>'+val+' KM'+(unit?'<small>'+unit+'</small>':'')+'</b></li>'}
+  var html='';
+  CONSOLES.forEach(function(c){var P=PRICES[c[0]];if(!P)return;
+    var rows=P.weekend
+      ? li('1 radni dan',P.day)+li('2–6 radnih dana',P.perDay,'/dan')+li('Vikend <span class="nw">(pet–ned)</span>',P.weekend,'/dan')+li('7 dana',P.week)
+      : li('24 sata',P.day)+li('2–6 dana',P.perDay,'/dan')+li('7 dana',P.week);
+    html+='<div class="plan plan-'+c[0]+'"><h3><span class="lg">'+c[1]+'</span><span class="sh">'+c[2]+'</span></h3><ul>'+rows+'</ul></div>'});
+  box.innerHTML=html;box.className='plans n'+box.children.length;
+})();
 (function(){var next=PRICE_LIST.filter(function(p){return p.from>TODAY})[0],el=document.getElementById('pnote');
   if(!next||!el)return;
-  el.textContent='Od '+next.from.split('-').reverse().join('.')+'. (izlazak GTA VI) nove cijene: PS5 od '+next.ps5.day+' KM, PS5 Pro od '+next.pro.day+' KM. Kalkulator ih računa automatski prema datumu preuzimanja.';
+  el.textContent='Od '+next.from.split('-').reverse().join('.')+'. (izlazak GTA VI) nove cijene: radnim danima PS5 od '+next.ps5.day+' KM i PS5 Pro od '+next.pro.day+' KM, vikendom (petak–nedjelja) '+next.ps5.weekend+' i '+next.pro.weekend+' KM po danu. U ponudi će biti i PS4. Kalkulator računa cijenu automatski prema datumu preuzimanja.';
   el.hidden=false})();
 var GAME_NAMES=['EA FC (FIFA)','Tekken','UFC','GTA V','GTA VI','Red Dead Redemption 2','It Takes Two','CTR Nitro-Fueled','COD: Cold War'];
 (function(){
@@ -365,8 +390,8 @@ var GAME_NAMES=['EA FC (FIFA)','Tekken','UFC','GTA V','GTA VI','Red Dead Redempt
   function calc(){
     var pro=document.querySelector('input[name=c]:checked').value==='pro';
     var n=+d.value, base;
-    var pd=getDate(), PL=pricesOn(pd&&pd!=='bad'?pd:TODAY), P=pro?PL.pro:PL.ps5;
-    base=n===1?P.day:(n===7?P.week:P.perDay*n);
+    var pd=getDate(), start=pd&&pd!=='bad'?pd:TODAY, PL=pricesOn(start), P=pro?PL.pro:PL.ps5;
+    base=rentPrice(P,start,n);
     var c=+$('ext').value, ext=PER_CTRL*c*n;
     var deliver=$('del').value==='dostava', zi=+z.value, dfee=0, dtxt='lično preuzimanje';
     $('zrow').style.display=deliver?'':'none';
