@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>PS5 Rent Sarajevo – iznajmljivanje PS5 i PS5 Pro, dostava</title>
-<meta name="description" content="Iznajmljivanje PS5 i PS5 Pro u Sarajevu od 35 KM na dan. PS Plus Premium, FC 26, GTA V, Tekken 8, UFC 5 i druge igre. Dostava na adresu ili lično preuzimanje.">
+<meta name="description" content="Iznajmljivanje PS5 i PS5 Pro u Sarajevu, na dan ili sedmicu. PS Plus Premium, FC 26, GTA V, Tekken 8, UFC 5 i druge igre. Dostava na adresu ili lično preuzimanje.">
 <link rel="canonical" href="https://psrent.net/">
 <meta name="theme-color" content="#0F5BD8">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
@@ -14,7 +14,7 @@
 <meta property="og:site_name" content="PS5 Rent Sarajevo">
 <meta property="og:url" content="https://psrent.net/">
 <meta property="og:title" content="PS5 Rent Sarajevo – iznajmljivanje PS5 i PS5 Pro">
-<meta property="og:description" content="Iznajmljivanje PS5 i PS5 Pro u Sarajevu od 35 KM na dan. PS Plus Premium, FC 26, GTA V, Tekken 8, UFC 5 i druge igre. Dostava na adresu ili lično preuzimanje.">
+<meta property="og:description" content="Iznajmljivanje PS5 i PS5 Pro u Sarajevu, na dan ili sedmicu. PS Plus Premium, FC 26, GTA V, Tekken 8, UFC 5 i druge igre. Dostava na adresu ili lično preuzimanje.">
 <meta property="og:image" content="https://psrent.net/og-image.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -31,7 +31,7 @@
   "image": "https://psrent.net/og-image.jpg",
   "logo": "https://psrent.net/apple-touch-icon.png",
   "telephone": "+38761963747",
-  "priceRange": "35–225 KM",
+  "priceRange": "35–320 KM",
   "currenciesAccepted": "BAM",
   "address": {
     "@type": "PostalAddress",
@@ -125,6 +125,7 @@ section h2{font-size:clamp(26px,3.6vw,36px);margin-bottom:22px}
 .plan{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px}
 .plan h3{font-size:20px;margin-bottom:12px}
 .plan h3 .sh{display:none}
+.pnote{margin:14px 0 0;color:var(--mute);font-size:15px}
 @media (max-width:379px){.plan h3 .lg{display:none}.plan h3 .sh{display:inline}}
 .plan ul{list-style:none;margin:0;padding:0;display:grid;gap:8px}
 .plan li{display:flex;justify-content:space-between;align-items:baseline;gap:8px;background:color-mix(in srgb,var(--blue) 7%,var(--card));border-radius:12px;padding:10px 14px}
@@ -231,6 +232,7 @@ footer{padding:30px 0 40px;color:var(--mute);font-size:15px;display:flex;justify
       </ul>
     </div>
   </div>
+  <p class="pnote" id="pnote" hidden></p>
 </section>
 
 <section id="igre">
@@ -283,9 +285,20 @@ footer{padding:30px 0 40px;color:var(--mute);font-size:15px;display:flex;justify
 <script>
 // Izlazak igara (jedno mjesto za datume) i spisak igara za izbor u kalkulatoru
 var RELEASE={'GTA VI':'2026-11-19'};
-// Cijene u KM (mijenjaj samo ovdje): day = 24 sata, perDay = po danu za 2 do 6 dana, week = 7 dana
-var PRICES={ps5:{day:35,perDay:25,week:160},pro:{day:45,perDay:35,week:225}};
+// Cijene u KM (mijenjaj samo ovdje). from = datum od kojeg cijene važe (prazno = od početka).
+// day = 24 sata, perDay = po danu za 2 do 6 dana, week = 7 dana
+var PRICE_LIST=[
+  {from:'',           ps5:{day:35,perDay:25,week:160}, pro:{day:45,perDay:35,week:225}},
+  {from:'2026-11-19', ps5:{day:45,perDay:40,week:260}, pro:{day:55,perDay:50,week:320}}  // izlazak GTA VI
+];
+function ymdOf(t){return t.getFullYear()+'-'+('0'+(t.getMonth()+1)).slice(-2)+'-'+('0'+t.getDate()).slice(-2)}
+function pricesOn(day){var r=PRICE_LIST[0];PRICE_LIST.forEach(function(p){if(p.from&&day>=p.from)r=p});return r}
+var TODAY=ymdOf(new Date()), PRICES=pricesOn(TODAY);
 document.querySelectorAll('[data-p]').forEach(function(el){var k=el.getAttribute('data-p').split('.');el.textContent=PRICES[k[0]][k[1]]+' KM'});
+(function(){var next=PRICE_LIST.filter(function(p){return p.from>TODAY})[0],el=document.getElementById('pnote');
+  if(!next||!el)return;
+  el.textContent='Od '+next.from.split('-').reverse().join('.')+'. (izlazak GTA VI) nove cijene: PS5 od '+next.ps5.day+' KM, PS5 Pro od '+next.pro.day+' KM. Kalkulator ih računa automatski prema datumu preuzimanja.';
+  el.hidden=false})();
 var GAME_NAMES=['EA FC (FIFA)','Tekken','UFC','GTA V','GTA VI','Red Dead Redemption 2','It Takes Two','CTR Nitro-Fueled','COD: Cold War'];
 (function(){
   // ---- Podešavanja (mijenjaj samo ovdje) ----
@@ -352,7 +365,7 @@ var GAME_NAMES=['EA FC (FIFA)','Tekken','UFC','GTA V','GTA VI','Red Dead Redempt
   function calc(){
     var pro=document.querySelector('input[name=c]:checked').value==='pro';
     var n=+d.value, base;
-    var P=pro?PRICES.pro:PRICES.ps5;
+    var pd=getDate(), PL=pricesOn(pd&&pd!=='bad'?pd:TODAY), P=pro?PL.pro:PL.ps5;
     base=n===1?P.day:(n===7?P.week:P.perDay*n);
     var c=+$('ext').value, ext=PER_CTRL*c*n;
     var deliver=$('del').value==='dostava', zi=+z.value, dfee=0, dtxt='lično preuzimanje';
