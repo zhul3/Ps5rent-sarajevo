@@ -97,7 +97,7 @@ option{background:var(--card);color:var(--ink)}
 .seg input:focus-visible+label{outline:3px solid var(--blue);outline-offset:2px}
 .chk{display:flex;gap:10px;align-items:center;font-weight:500}
 .chk input{width:20px;height:20px;accent-color:var(--blue)}
-.total{display:flex;justify-content:space-between;align-items:baseline;border-top:2px dashed var(--line);padding-top:16px;margin:8px 0 16px}
+.total{display:flex;justify-content:space-between;align-items:baseline;padding-top:8px;margin:8px 0 16px}
 .total strong{font:800 40px var(--hd);white-space:nowrap;margin-left:12px}
 .total span{color:var(--mute);font-size:15px}
 .note{font-size:14px;color:var(--mute);margin:12px 0 0}
@@ -113,16 +113,26 @@ option{background:var(--card);color:var(--ink)}
 .gchip input:disabled+span{opacity:.55;cursor:not-allowed;border-style:dashed}
 input[type=text],textarea{resize:vertical;font:inherit;color:var(--ink);background-color:color-mix(in srgb,var(--card) 55%,transparent);border:2px solid var(--line);border-radius:10px;padding:11px 12px;width:100%;min-width:0}
 @media (min-width:821px){input[type=text],textarea{background-color:color-mix(in srgb,var(--card) 18%,transparent)}}
-section{padding:46px 0;border-top:1px solid var(--line)}
+section{padding:46px 0}
 section h2{font-size:clamp(26px,3.6vw,36px);margin-bottom:22px}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px}
 .box{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px}
 .box h3{font-size:20px;margin-bottom:8px}
 .box p{margin:0;color:var(--mute)}
 .box h4{font:600 20px/1.1 var(--hd);margin:0 0 8px}
-.sub{font-size:22px;margin:26px 0 14px}
-.sub:first-of-type{margin-top:0}
-.price{font:800 30px var(--hd);display:block;margin-bottom:4px}
+.prices{padding-top:8px}
+.plans{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.plan{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px}
+.plan h3{font-size:20px;margin-bottom:12px}
+.plan h3 .sh{display:none}
+@media (max-width:379px){.plan h3 .lg{display:none}.plan h3 .sh{display:inline}}
+.plan ul{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.plan li{display:flex;justify-content:space-between;align-items:baseline;gap:8px;background:color-mix(in srgb,var(--blue) 7%,var(--card));border-radius:12px;padding:10px 14px}
+.plan li span{color:var(--mute);font-weight:500;font-size:15px}
+.plan b{font:800 22px var(--hd);white-space:nowrap}
+.plan b i{font-style:normal}
+.plan small{font:700 13px var(--bd);color:var(--mute);margin-left:2px}
+@media (max-width:560px){.plans{gap:10px}.plan{padding:12px;border-radius:16px}.plan h3{font-size:16px;margin-bottom:10px}.plan ul{gap:6px}.plan li{flex-direction:column;align-items:flex-start;gap:0;padding:8px 10px;border-radius:10px}.plan li span{font-size:13px}.plan b{font-size:19px}}
 .stage{height:280px;perspective:1100px;overflow:hidden;cursor:grab;touch-action:pan-y;-webkit-user-select:none;user-select:none;margin-top:4px}
 .stage.drag{cursor:grabbing}
 .ring{--cw:150px;position:relative;width:var(--cw);height:calc(var(--cw)*1.28);margin:34px auto 0;transform-style:preserve-3d;transition:transform .55s cubic-bezier(.2,.8,.2,1)}
@@ -145,7 +155,7 @@ section h2{font-size:clamp(26px,3.6vw,36px);margin-bottom:22px}
 details{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 20px;margin-bottom:10px}
 summary{font-weight:700;cursor:pointer}
 details p{margin:10px 0 0;color:var(--mute)}
-footer{border-top:1px solid var(--line);padding:30px 0 40px;color:var(--mute);font-size:15px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
+footer{padding:30px 0 40px;color:var(--mute);font-size:15px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
 .pad{display:grid;grid-template-columns:repeat(2,22px);gap:6px;transform:rotate(45deg);margin:10px 14px}
 .pad i{width:22px;height:22px;border-radius:50%;border:4px solid}
 .pad i:nth-child(1){border-color:var(--tri)}.pad i:nth-child(2){border-color:var(--cir)}.pad i:nth-child(3){border-color:var(--squ)}.pad i:nth-child(4){border-color:var(--cro)}
@@ -198,22 +208,28 @@ footer{border-top:1px solid var(--line);padding:30px 0 40px;color:var(--mute);fo
     </details>
     <div class="total"><span id="per"></span><strong id="sum">35 KM</strong></div>
     <a class="btn" id="wa" href="#" style="display:block;text-align:center">Pošalji upit na WhatsApp</a>
-    <p class="note">Cijena je okvirna, a dostava se računa po općini. Ugovor se potpisuje pri preuzimanju. Duže od 7 dana: dogovor.</p>
+    <p class="note">Cijena je okvirna, a dostava se računa po općini. Ugovor se potpisuje pri preuzimanju.</p>
   </div>
 </div>
 
-<section>
-  <h3 class="sub">PlayStation 5</h3>
-  <div class="grid">
-    <div class="box"><span class="price">35 KM</span><h4>24 sata</h4><p>Idealno za večer s prijateljima ili porodicom.</p></div>
-    <div class="box"><span class="price">25 KM / dan</span><h4>2 do 6 dana</h4><p>Jeftinije po danu za duži period.</p></div>
-    <div class="box"><span class="price">160 KM</span><h4>7 dana</h4><p>Cijela sedmica igranja.</p></div>
-  </div>
-  <h3 class="sub">PlayStation 5 Pro</h3>
-  <div class="grid">
-    <div class="box"><span class="price">45 KM</span><h4>24 sata</h4><p>Oštrija slika i brže učitavanje, za večer koja se pamti.</p></div>
-    <div class="box"><span class="price">35 KM / dan</span><h4>2 do 6 dana</h4><p>Za produženi vikend ili kratak odmor uz najjaču konzolu.</p></div>
-    <div class="box"><span class="price">225 KM</span><h4>7 dana</h4><p>Najpovoljnija cijena po danu za Pro.</p></div>
+<section class="prices">
+  <div class="plans">
+    <div class="plan">
+      <h3><span class="lg">PlayStation 5</span><span class="sh">PS5</span></h3>
+      <ul>
+        <li><span>24 sata</span><b data-p="ps5.day">35 KM</b></li>
+        <li><span>2–6 dana</span><b><i data-p="ps5.perDay">25 KM</i><small>/dan</small></b></li>
+        <li><span>7 dana</span><b data-p="ps5.week">160 KM</b></li>
+      </ul>
+    </div>
+    <div class="plan">
+      <h3><span class="lg">PlayStation 5 Pro</span><span class="sh">PS5 Pro</span></h3>
+      <ul>
+        <li><span>24 sata</span><b data-p="pro.day">45 KM</b></li>
+        <li><span>2–6 dana</span><b><i data-p="pro.perDay">35 KM</i><small>/dan</small></b></li>
+        <li><span>7 dana</span><b data-p="pro.week">225 KM</b></li>
+      </ul>
+    </div>
   </div>
 </section>
 
@@ -267,6 +283,9 @@ footer{border-top:1px solid var(--line);padding:30px 0 40px;color:var(--mute);fo
 <script>
 // Izlazak igara (jedno mjesto za datume) i spisak igara za izbor u kalkulatoru
 var RELEASE={'GTA VI':'2026-11-19'};
+// Cijene u KM (mijenjaj samo ovdje): day = 24 sata, perDay = po danu za 2 do 6 dana, week = 7 dana
+var PRICES={ps5:{day:35,perDay:25,week:160},pro:{day:45,perDay:35,week:225}};
+document.querySelectorAll('[data-p]').forEach(function(el){var k=el.getAttribute('data-p').split('.');el.textContent=PRICES[k[0]][k[1]]+' KM'});
 var GAME_NAMES=['EA FC (FIFA)','Tekken','UFC','GTA V','GTA VI','Red Dead Redemption 2','It Takes Two','CTR Nitro-Fueled','COD: Cold War'];
 (function(){
   // ---- Podešavanja (mijenjaj samo ovdje) ----
@@ -333,7 +352,8 @@ var GAME_NAMES=['EA FC (FIFA)','Tekken','UFC','GTA V','GTA VI','Red Dead Redempt
   function calc(){
     var pro=document.querySelector('input[name=c]:checked').value==='pro';
     var n=+d.value, base;
-    if(pro) base=n===1?45:(n===7?225:35*n); else base=n===1?35:(n===7?160:25*n);
+    var P=pro?PRICES.pro:PRICES.ps5;
+    base=n===1?P.day:(n===7?P.week:P.perDay*n);
     var c=+$('ext').value, ext=PER_CTRL*c*n;
     var deliver=$('del').value==='dostava', zi=+z.value, dfee=0, dtxt='lično preuzimanje';
     $('zrow').style.display=deliver?'':'none';
